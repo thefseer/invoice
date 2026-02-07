@@ -8,86 +8,144 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
-body{
-  font-family: Calibri, Arial, sans-serif;
-  background:#eee;
-  padding:20px;
-}
-.page{
-  width:210mm;
-  min-height:297mm;
-  background:#fff;
-  margin:auto;
-  padding:20mm;
-  box-sizing:border-box;
-}
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-}
-.logo{
-  max-height:60px;
-}
-h1{
-  margin:0;
-  font-size:26px;
-  letter-spacing:1px;
-}
-.small{
-  font-size:12px;
-  line-height:1.5;
-}
-.section{ margin-top:18px; }
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:16px;
-  font-size:13px;
-}
-th,td{
-  border-bottom:1px solid #ccc;
-  padding:6px;
-  text-align:right;
-}
-th:first-child, td:first-child{ text-align:left; }
-
-input{
-  width:100%;
-  border:none;
-  font-family:inherit;
-  font-size:13px;
-  background:transparent;
-  text-align:right;
-}
-.desc{ text-align:left; }
-
-.totals{
-  margin-top:16px;
-}
-.totals td{ padding:6px; }
-
-.bold{ font-weight:bold; }
-
-.bank{
-  margin-top:22px;
-  font-size:12px;
-  line-height:1.5;
+/* RESET */
+* {
+  box-sizing: border-box;
 }
 
-.actions{
-  text-align:center;
-  margin-top:20px;
-}
-button{
-  padding:8px 14px;
-  font-size:13px;
-  cursor:pointer;
+body {
+  margin: 0;
+  padding: 20px;
+  background: #f2f2f2;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-@media print{
-  .actions{ display:none; }
+/* A4 PAGE */
+.page {
+  width: 794px;        /* A4 width in px */
+  min-height: 1123px;  /* A4 height in px */
+  margin: auto;
+  background: #fff;
+  padding: 60px;
+}
+
+/* HEADER */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+/* TEXT */
+.small {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.section {
+  margin-top: 18px;
+}
+
+/* BILL ROW */
+.bill-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 15px;
+}
+
+.bill-right {
+  text-align: right;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+th {
+  text-align: right;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 6px;
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+td {
+  padding: 6px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: right;
+}
+
+.desc {
+  text-align: left;
+}
+
+/* TOTALS */
+.totals {
+  margin-top: 18px;
+}
+
+.totals td {
+  padding: 5px 0;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+/* BANK */
+.bank {
+  margin-top: 25px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ACTIONS */
+.actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* PRINT FIX */
+@media print {
+  body {
+    background: #fff;
+    padding: 0;
+  }
+  .actions {
+    display: none;
+  }
+  .page {
+    width: auto;
+    min-height: auto;
+    padding: 40px;
+  }
 }
 </style>
 </head>
@@ -97,13 +155,10 @@ button{
 <div class="page" id="invoice">
 
   <div class="header">
-    <div>
-      <h1>INVOICE</h1>
-    </div>
-    <img src="logo.png" class="logo" alt="">
+    <h1>INVOICE</h1>
   </div>
 
-  <div class="section small" style="display:flex;justify-content:space-between">
+  <div class="bill-row small">
     <div>
       <strong>Bill To :</strong><br>
       Thefseer Abdul Sathar<br>
@@ -111,10 +166,11 @@ button{
       971567169979<br>
       thefseernk@gmail.com
     </div>
-    <div style="text-align:right">
-      Invoice No : <span id="invNo"></span><br>
-      Invoice Date : <input type="date" value="2026-01-30"><br>
-      Due Date : <input type="date" value="2026-02-06">
+
+    <div class="bill-right">
+      Invoice No : TEF-INV-2026-01-001<br>
+      Invoice Date : 2026-01-30<br>
+      Due Date : 2026-02-06
     </div>
   </div>
 
@@ -172,38 +228,33 @@ button{
 
 <div class="actions">
   <button onclick="addRow()">Add Item</button>
-  <button onclick="generatePDF()">Generate PDF (A4)</button>
+  <button onclick="generatePDF()">Generate PDF</button>
 </div>
 
 <script>
-/* Auto invoice number */
-let last = localStorage.getItem("inv") || 1;
-document.getElementById("invNo").innerText =
-  "TEF-INV-2026-01-" + String(last).padStart(3,"0");
-localStorage.setItem("inv", Number(last)+1);
-
-function calc(){
+function calc() {
   let total = 0;
-  document.querySelectorAll("#items tbody tr").forEach(r=>{
-    let q = +r.children[1].children[0].value || 0;
-    let rate = +r.children[2].children[0].value || 0;
-    let amt = q*rate;
-    r.querySelector(".amount").innerText = amt.toFixed(2);
+  document.querySelectorAll("#items tbody tr").forEach(row => {
+    const qty = +row.children[1].children[0].value || 0;
+    const rate = +row.children[2].children[0].value || 0;
+    const amt = qty * rate;
+    row.querySelector(".amount").innerText = amt.toFixed(2);
     total += amt;
   });
-  let paid = document.querySelector(".totals input").value || 0;
-  let bal = total - paid;
+
+  const paid = document.querySelector(".totals input").value || 0;
+  const balance = total - paid;
 
   document.getElementById("total").innerText = total.toFixed(2);
   document.getElementById("balance").innerText =
-    "د.إ. " + bal.toLocaleString(undefined,{minimumFractionDigits:2});
+    "د.إ. " + balance.toLocaleString(undefined,{minimumFractionDigits:2});
   document.getElementById("words").innerText =
-    numberToWords(bal) + " AED Only";
+    numberToWords(balance) + " AED Only";
 }
 
-function addRow(){
-  let tr=document.createElement("tr");
-  tr.innerHTML=`
+function addRow() {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
     <td><input class="desc"></td>
     <td><input type="number" value="1" oninput="calc()"></td>
     <td><input type="number" value="0" oninput="calc()"></td>
@@ -211,7 +262,7 @@ function addRow(){
   document.querySelector("#items tbody").appendChild(tr);
 }
 
-function numberToWords(n){
+function numberToWords(n) {
   const a=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
   "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
   const b=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
@@ -223,12 +274,20 @@ function numberToWords(n){
   return "";
 }
 
-async function generatePDF(){
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF("p","mm","a4");
-  const canvas=await html2canvas(document.getElementById("invoice"),{scale:2});
-  const img=canvas.toDataURL("image/png");
-  pdf.addImage(img,"PNG",0,0,210,canvas.height*210/canvas.width);
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p","pt","a4");
+
+  const canvas = await html2canvas(document.getElementById("invoice"), {
+    scale: 2,
+    useCORS: true
+  });
+
+  const img = canvas.toDataURL("image/png");
+  const width = pdf.internal.pageSize.getWidth();
+  const height = canvas.height * width / canvas.width;
+
+  pdf.addImage(img,"PNG",0,0,width,height);
   pdf.save("invoice.pdf");
 }
 
