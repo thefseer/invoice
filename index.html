@@ -15,226 +15,174 @@ body{
   font-family:'Inter', Arial, sans-serif;
 }
 
-/* A4 canvas in points */
-.invoice-canvas{
+/* Exact A4 canvas */
+.canvas{
   position:relative;
-  width:595pt;
-  height:842pt;
-  background:#fff;
+  width:794px;   /* A4 @ 96dpi */
+  height:1123px;
   margin:auto;
+  background:#fff;
 }
 
-/* Common text */
-.text{ font-size:10.5pt; line-height:14pt; }
-.bold{ font-weight:600; }
-
-/* Header */
-.title{
+/* PDF background */
+.bg{
   position:absolute;
-  top:40pt;
-  left:40pt;
-  font-size:20pt;
-  font-weight:600;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:0;
 }
 
-.logo{
+/* Overlay layer */
+.layer{
   position:absolute;
-  top:38pt;
-  right:40pt;
-  height:40pt;
+  inset:0;
+  z-index:1;
 }
 
-/* Bill To */
-.billto{
+/* Editable text */
+.field{
   position:absolute;
-  top:90pt;
-  left:40pt;
+  font-size:12px;
+  line-height:16px;
 }
 
-/* Invoice meta */
-.meta{
-  position:absolute;
-  top:90pt;
-  right:40pt;
-  text-align:right;
-}
-
-/* Project / Subject */
-.project{
-  position:absolute;
-  top:155pt;
-  left:40pt;
+input{
+  border:none;
+  background:transparent;
+  font-family:inherit;
+  font-size:12px;
+  width:100%;
 }
 
 /* Items table */
 .items{
   position:absolute;
-  top:195pt;
-  left:40pt;
-  width:515pt;
+  left:90px;
+  top:360px;
+  width:610px;
   border-collapse:collapse;
-  font-size:10.5pt;
-}
-
-.items th{
-  border-bottom:1px solid #000;
-  padding-bottom:6pt;
-  text-align:right;
-  font-weight:500;
-}
-
-.items th:first-child,
-.items td:first-child{
-  text-align:left;
+  font-size:12px;
 }
 
 .items td{
-  padding:8pt 0;
-  border-bottom:1px solid #d0d0d0;
+  padding:6px 4px;
 }
 
-/* Inputs */
-input{
-  border:none;
-  background:transparent;
-  font-family:inherit;
-  font-size:10.5pt;
-  width:100%;
+.items .amt{
   text-align:right;
 }
 
-.desc{ text-align:left; }
-
-/* Add button */
-.add-btn{
-  cursor:pointer;
+/* + icon */
+.add{
+  position:absolute;
+  top:340px;
+  left:90px;
   font-weight:600;
-  margin-left:6pt;
+  cursor:pointer;
 }
 
 /* Totals */
-.totals{
+.total{
   position:absolute;
-  top:340pt;
-  right:40pt;
-  width:200pt;
-  font-size:10.5pt;
+  right:90px;
+  top:510px;
+  text-align:right;
+  font-size:12px;
 }
 
-.totals div{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6pt;
-}
-
-/* Amount in words */
+/* Words */
 .words{
   position:absolute;
-  top:400pt;
-  left:40pt;
-  font-size:10.5pt;
+  left:90px;
+  top:560px;
+  font-size:12px;
   font-weight:500;
 }
 
-/* Bank */
-.bank{
-  position:absolute;
-  bottom:60pt;
-  left:40pt;
-  font-size:10pt;
-  line-height:14pt;
-}
-
-/* Actions */
+/* Buttons */
 .actions{
   text-align:center;
   margin-top:20px;
 }
 
+/* Hide UI in PDF */
 @media print{
-  body{ background:#fff; padding:0; }
-  .actions, .add-btn{ display:none !important; }
+  .actions, .add{ display:none; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="invoice-canvas" id="invoice">
+<div class="canvas" id="invoice">
 
-<div class="title">INVOICE</div>
-<img src="logo.png" class="logo">
+  <!-- Background PDF image -->
+  <img src="template.png" class="bg">
 
-<div class="billto text">
-  <span class="bold">Bill To :</span><br>
-  Thefseer Abdul Sathar<br>
-  Dubai U.A.E<br>
-  971567169979<br>
-  thefseernk@gmail.com
-</div>
+  <!-- Editable overlay -->
+  <div class="layer">
 
-<div class="meta text">
-  Invoice No : TEF-INV-2026-01-001<br>
-  Invoice Date : 2026-01-30<br>
-  Due Date : 2026-02-06
-</div>
+    <!-- Bill To -->
+    <div class="field" style="left:90px; top:150px;">
+      Thefseer Abdul Sathar<br>
+      Dubai U.A.E<br>
+      971567169979<br>
+      thefseernk@gmail.com
+    </div>
 
-<div class="project text">
-  <span class="bold">Project :</span> Mubadala<br>
-  <span class="bold">Subject :</span> Reception Light Feature
-</div>
+    <!-- Invoice meta -->
+    <div class="field" style="right:90px; top:150px; text-align:right;">
+      TEF-INV-2026-01-001<br>
+      2026-01-30<br>
+      2026-02-06
+    </div>
 
-<table class="items" id="items">
-<thead>
-<tr>
-  <th>
-    # Item & Description
-    <span class="add-btn" onclick="addRow()">+</span>
-  </th>
-  <th>Qty</th>
-  <th>Rate</th>
-  <th>Amount</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td><input class="desc" value="Charges for Light Feature Visual"></td>
-  <td><input type="number" value="3" oninput="calc()"></td>
-  <td><input type="number" value="500" oninput="calc()"></td>
-  <td class="amount">1,500.00</td>
-</tr>
-</tbody>
-</table>
+    <!-- Add item -->
+    <div class="add" onclick="addRow()">+</div>
 
-<div class="totals text">
-  <div><span class="bold">Total</span><span id="total">1,500.00</span></div>
-  <div><span>Paid</span><input type="number" value="0" oninput="calc()" style="width:80pt;text-align:right"></div>
-  <div class="bold"><span>Balance Due</span><span id="balance">د.إ. 1,500.00</span></div>
-</div>
+    <!-- Items -->
+    <table class="items" id="items">
+      <tbody>
+        <tr>
+          <td width="60%">
+            <input value="Charges for Light Feature Visual">
+          </td>
+          <td width="10%">
+            <input type="number" value="3" oninput="calc()">
+          </td>
+          <td width="15%">
+            <input type="number" value="500" oninput="calc()">
+          </td>
+          <td width="15%" class="amt amount">1,500.00</td>
+        </tr>
+      </tbody>
+    </table>
 
-<div class="words" id="words">
-One Thousand Five Hundred AED Only
-</div>
+    <!-- Totals -->
+    <div class="total">
+      <div>Total: <span id="total">1,500.00</span></div>
+      <div>Paid: <input type="number" value="0" oninput="calc()" style="width:80px;text-align:right"></div>
+      <div><strong>Balance Due:</strong> <span id="balance">1,500.00</span></div>
+    </div>
 
-<div class="bank">
-  <span class="bold">Bank Details :</span><br>
-  Name: Thefseer Nalam Kuttiyil<br>
-  Account No: 0215085399101<br>
-  IBAN: AE410260000215085399101<br>
-  Bank Name: Emirates NBD<br>
-  Account Type: Savings Account
-</div>
+    <!-- Words -->
+    <div class="words" id="words">
+      One Thousand Five Hundred AED Only
+    </div>
 
+  </div>
 </div>
 
 <div class="actions">
-  <button onclick="generatePDF()">Generate PDF (A4)</button>
+  <button onclick="generatePDF()">Generate PDF</button>
 </div>
 
 <script>
 function calc(){
   let total=0;
-  document.querySelectorAll("#items tbody tr").forEach(r=>{
+  document.querySelectorAll("#items tr").forEach(r=>{
     let q=+r.children[1].children[0].value||0;
     let rate=+r.children[2].children[0].value||0;
     let amt=q*rate;
@@ -242,13 +190,12 @@ function calc(){
       amt.toLocaleString(undefined,{minimumFractionDigits:2});
     total+=amt;
   });
-  let paid=document.querySelector(".totals input").value||0;
+  let paid=document.querySelector(".total input").value||0;
   let bal=total-paid;
-
   document.getElementById("total").innerText=
     total.toLocaleString(undefined,{minimumFractionDigits:2});
   document.getElementById("balance").innerText=
-    "د.إ. "+bal.toLocaleString(undefined,{minimumFractionDigits:2});
+    bal.toLocaleString(undefined,{minimumFractionDigits:2});
   document.getElementById("words").innerText=
     numberToWords(bal)+" AED Only";
 }
@@ -256,10 +203,10 @@ function calc(){
 function addRow(){
   let tr=document.createElement("tr");
   tr.innerHTML=`
-  <td><input class="desc"></td>
-  <td><input type="number" value="1" oninput="calc()"></td>
-  <td><input type="number" value="0" oninput="calc()"></td>
-  <td class="amount">0.00</td>`;
+    <td><input></td>
+    <td><input type="number" value="1" oninput="calc()"></td>
+    <td><input type="number" value="0" oninput="calc()"></td>
+    <td class="amt amount">0.00</td>`;
   document.querySelector("#items tbody").appendChild(tr);
 }
 
@@ -280,7 +227,7 @@ async function generatePDF(){
   const pdf=new jsPDF("p","pt","a4");
   const canvas=await html2canvas(document.getElementById("invoice"),{scale:2});
   const img=canvas.toDataURL("image/png");
-  pdf.addImage(img,"PNG",0,0,595,canvas.height*595/canvas.width);
+  pdf.addImage(img,"PNG",0,0,595,842);
   pdf.save("invoice.pdf");
 }
 
