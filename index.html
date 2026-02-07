@@ -4,148 +4,129 @@
 <meta charset="UTF-8">
 <title>Invoice</title>
 
+<!-- Stable web font (Calibri-like) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
-/* RESET */
-* {
-  box-sizing: border-box;
-}
-
 body {
-  margin: 0;
-  padding: 20px;
-  background: #f2f2f2;
-  font-family: "Segoe UI", Arial, sans-serif;
+  background:#eee;
+  padding:20px;
+  font-family: 'Inter', Arial, sans-serif;
 }
 
-/* A4 PAGE */
+/* A4 fixed canvas */
 .page {
-  width: 794px;        /* A4 width in px */
-  min-height: 1123px;  /* A4 height in px */
-  margin: auto;
-  background: #fff;
-  padding: 60px;
+  width: 794px;
+  height: 1123px;
+  background:#fff;
+  margin:auto;
+  padding:60px;
+  box-sizing:border-box;
 }
 
-/* HEADER */
-.header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
+/* Header */
+.header-table {
+  width:100%;
+  border-collapse:collapse;
 }
 
-.header h1 {
-  margin: 0;
-  font-size: 26px;
-  letter-spacing: 1px;
+.header-table td {
+  vertical-align:top;
 }
 
-/* TEXT */
+.title {
+  font-size:26px;
+  font-weight:600;
+}
+
+.logo {
+  max-height:60px;
+  float:right;
+}
+
+/* Text */
 .small {
-  font-size: 12px;
-  line-height: 1.6;
+  font-size:12px;
+  line-height:1.6;
 }
 
 .section {
-  margin-top: 18px;
+  margin-top:18px;
 }
 
-/* BILL ROW */
-.bill-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 15px;
+/* Items table */
+.items {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+  font-size:13px;
 }
 
-.bill-right {
-  text-align: right;
+.items th {
+  text-align:right;
+  border-bottom:1px solid #999;
+  padding-bottom:6px;
 }
 
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 13px;
+.items th:first-child,
+.items td:first-child {
+  text-align:left;
 }
 
-th {
-  text-align: right;
-  border-bottom: 1px solid #bbb;
-  padding-bottom: 6px;
-}
-
-th:first-child,
-td:first-child {
-  text-align: left;
-}
-
-td {
-  padding: 6px 0;
-  border-bottom: 1px solid #e0e0e0;
+.items td {
+  border-bottom:1px solid #ddd;
+  padding:6px 0;
 }
 
 input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 13px;
-  text-align: right;
+  width:100%;
+  border:none;
+  font-family:inherit;
+  font-size:13px;
+  background:transparent;
+  text-align:right;
 }
 
-.desc {
-  text-align: left;
-}
+.desc { text-align:left; }
 
-/* TOTALS */
+/* Totals */
 .totals {
-  margin-top: 18px;
+  width:100%;
+  margin-top:18px;
+  font-size:13px;
 }
 
 .totals td {
-  padding: 5px 0;
+  padding:6px 0;
 }
 
-.bold {
-  font-weight: 600;
-}
+.bold { font-weight:600; }
 
-/* BANK */
+/* Bank */
 .bank {
-  margin-top: 25px;
-  font-size: 12px;
-  line-height: 1.6;
+  margin-top:26px;
+  font-size:12px;
+  line-height:1.6;
 }
 
-/* ACTIONS */
+/* Actions */
 .actions {
-  text-align: center;
-  margin-top: 20px;
+  text-align:center;
+  margin-top:20px;
 }
 
 button {
-  padding: 8px 16px;
-  font-size: 13px;
-  cursor: pointer;
+  padding:8px 16px;
+  font-size:13px;
+  cursor:pointer;
 }
 
-/* PRINT FIX */
 @media print {
-  body {
-    background: #fff;
-    padding: 0;
-  }
-  .actions {
-    display: none;
-  }
-  .page {
-    width: auto;
-    min-height: auto;
-    padding: 40px;
-  }
+  body { background:#fff; padding:0; }
+  .actions { display:none; }
 }
 </style>
 </head>
@@ -154,140 +135,134 @@ button {
 
 <div class="page" id="invoice">
 
-  <div class="header">
-    <h1>INVOICE</h1>
-  </div>
+<table class="header-table">
+<tr>
+<td class="title">INVOICE</td>
+<td><img src="logo.png" class="logo"></td>
+</tr>
+</table>
 
-  <div class="bill-row small">
-    <div>
-      <strong>Bill To :</strong><br>
-      Thefseer Abdul Sathar<br>
-      Dubai U.A.E<br>
-      971567169979<br>
-      thefseernk@gmail.com
-    </div>
+<table width="100%" class="small" style="margin-top:20px">
+<tr>
+<td width="50%">
+<strong>Bill To :</strong><br>
+Thefseer Abdul Sathar<br>
+Dubai U.A.E<br>
+971567169979<br>
+thefseernk@gmail.com
+</td>
+<td width="50%" align="right">
+Invoice No : TEF-INV-2026-01-001<br>
+Invoice Date : 2026-01-30<br>
+Due Date : 2026-02-06
+</td>
+</tr>
+</table>
 
-    <div class="bill-right">
-      Invoice No : TEF-INV-2026-01-001<br>
-      Invoice Date : 2026-01-30<br>
-      Due Date : 2026-02-06
-    </div>
-  </div>
+<div class="section small">
+<strong>Project :</strong> Mubadala<br>
+<strong>Subject :</strong> Reception Light Feature
+</div>
 
-  <div class="section small">
-    <strong>Project :</strong> Mubadala<br>
-    <strong>Subject :</strong> Reception Light Feature
-  </div>
+<table class="items" id="items">
+<thead>
+<tr>
+<th># Item & Description</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><input class="desc" value="Charges for Light Feature Visual"></td>
+<td><input type="number" value="3" oninput="calc()"></td>
+<td><input type="number" value="500" oninput="calc()"></td>
+<td class="amount">1500.00</td>
+</tr>
+</tbody>
+</table>
 
-  <table id="items">
-    <thead>
-      <tr>
-        <th># Item & Description</th>
-        <th>Qty</th>
-        <th>Rate</th>
-        <th>Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input class="desc" value="Charges for Light Feature Visual"></td>
-        <td><input type="number" value="3" oninput="calc()"></td>
-        <td><input type="number" value="500" oninput="calc()"></td>
-        <td class="amount">1500.00</td>
-      </tr>
-    </tbody>
-  </table>
+<table class="totals">
+<tr class="bold">
+<td>Total</td>
+<td align="right" id="total">1500.00</td>
+</tr>
+<tr>
+<td>Paid</td>
+<td align="right"><input type="number" value="0" oninput="calc()"></td>
+</tr>
+<tr class="bold">
+<td>Balance Due</td>
+<td align="right" id="balance">د.إ. 1,500.00</td>
+</tr>
+</table>
 
-  <table class="totals">
-    <tr class="bold">
-      <td>Total</td>
-      <td id="total">1500.00</td>
-    </tr>
-    <tr>
-      <td>Paid</td>
-      <td><input type="number" value="0" oninput="calc()"></td>
-    </tr>
-    <tr class="bold">
-      <td>Balance Due</td>
-      <td id="balance">د.إ. 1,500.00</td>
-    </tr>
-  </table>
+<div class="small bold" id="words"></div>
 
-  <div class="small bold" id="words"></div>
-
-  <div class="bank">
-    <strong>Bank Details :</strong><br>
-    Name: Thefseer Nalam Kuttiyil<br>
-    Account No: 0215085399101<br>
-    IBAN: AE410260000215085399101<br>
-    Bank Name: Emirates NBD<br>
-    Account Type: Savings Account
-  </div>
+<div class="bank">
+<strong>Bank Details :</strong><br>
+Name: Thefseer Nalam Kuttiyil<br>
+Account No: 0215085399101<br>
+IBAN: AE410260000215085399101<br>
+Bank Name: Emirates NBD<br>
+Account Type: Savings Account
+</div>
 
 </div>
 
 <div class="actions">
-  <button onclick="addRow()">Add Item</button>
-  <button onclick="generatePDF()">Generate PDF</button>
+<button onclick="addRow()">Add Item</button>
+<button onclick="generatePDF()">Generate PDF</button>
 </div>
 
 <script>
-function calc() {
-  let total = 0;
-  document.querySelectorAll("#items tbody tr").forEach(row => {
-    const qty = +row.children[1].children[0].value || 0;
-    const rate = +row.children[2].children[0].value || 0;
-    const amt = qty * rate;
-    row.querySelector(".amount").innerText = amt.toFixed(2);
-    total += amt;
+function calc(){
+  let total=0;
+  document.querySelectorAll("#items tbody tr").forEach(r=>{
+    let q=+r.children[1].children[0].value||0;
+    let rate=+r.children[2].children[0].value||0;
+    let a=q*rate;
+    r.querySelector(".amount").innerText=a.toFixed(2);
+    total+=a;
   });
-
-  const paid = document.querySelector(".totals input").value || 0;
-  const balance = total - paid;
-
-  document.getElementById("total").innerText = total.toFixed(2);
-  document.getElementById("balance").innerText =
-    "د.إ. " + balance.toLocaleString(undefined,{minimumFractionDigits:2});
-  document.getElementById("words").innerText =
-    numberToWords(balance) + " AED Only";
+  let paid=document.querySelector(".totals input").value||0;
+  let bal=total-paid;
+  document.getElementById("total").innerText=total.toFixed(2);
+  document.getElementById("balance").innerText=
+    "د.إ. "+bal.toLocaleString(undefined,{minimumFractionDigits:2});
+  document.getElementById("words").innerText=
+    numberToWords(bal)+" AED Only";
 }
 
-function addRow() {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td><input class="desc"></td>
-    <td><input type="number" value="1" oninput="calc()"></td>
-    <td><input type="number" value="0" oninput="calc()"></td>
-    <td class="amount">0.00</td>`;
+function addRow(){
+  let tr=document.createElement("tr");
+  tr.innerHTML=`
+  <td><input class="desc"></td>
+  <td><input type="number" value="1" oninput="calc()"></td>
+  <td><input type="number" value="0" oninput="calc()"></td>
+  <td class="amount">0.00</td>`;
   document.querySelector("#items tbody").appendChild(tr);
 }
 
-function numberToWords(n) {
+function numberToWords(n){
   const a=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
   "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
   const b=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
-  if(n===0) return "Zero";
-  if(n<20) return a[n];
-  if(n<100) return b[Math.floor(n/10)]+" "+a[n%10];
-  if(n<1000) return a[Math.floor(n/100)]+" Hundred "+numberToWords(n%100);
-  if(n<1000000) return numberToWords(Math.floor(n/1000))+" Thousand "+numberToWords(n%1000);
+  if(n===0)return"Zero";
+  if(n<20)return a[n];
+  if(n<100)return b[Math.floor(n/10)]+" "+a[n%10];
+  if(n<1000)return a[Math.floor(n/100)]+" Hundred "+numberToWords(n%100);
+  if(n<1000000)return numberToWords(Math.floor(n/1000))+" Thousand "+numberToWords(n%1000);
   return "";
 }
 
-async function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p","pt","a4");
-
-  const canvas = await html2canvas(document.getElementById("invoice"), {
-    scale: 2,
-    useCORS: true
-  });
-
-  const img = canvas.toDataURL("image/png");
-  const width = pdf.internal.pageSize.getWidth();
-  const height = canvas.height * width / canvas.width;
-
-  pdf.addImage(img,"PNG",0,0,width,height);
+async function generatePDF(){
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF("p","pt","a4");
+  const canvas=await html2canvas(document.getElementById("invoice"),{scale:2});
+  const img=canvas.toDataURL("image/png");
+  pdf.addImage(img,"PNG",0,0,595,canvas.height*595/canvas.width);
   pdf.save("invoice.pdf");
 }
 
