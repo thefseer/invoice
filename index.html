@@ -1,238 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Invoice</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - TEF-INV-2026-01-001</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif; /* Closest web-safe match to PDF font */
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        .invoice-container {
+            background: white;
+            width: 210mm; /* A4 Width */
+            min-height: 297mm; /* A4 Height */
+            margin: 0 auto;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-<style>
-body{
-  background:#eee;
-  padding:20px;
-  font-family:'Inter', Arial, sans-serif;
-}
+        @media print {
+            body { background: none; padding: 0; }
+            .invoice-container { box-shadow: none; margin: 0; width: 100%; }
+            .no-print { display: none; }
+        }
 
-/* Exact A4 canvas */
-.canvas{
-  position:relative;
-  width:794px;   /* A4 @ 96dpi */
-  height:1123px;
-  margin:auto;
-  background:#fff;
-}
-
-/* PDF background */
-.bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  z-index:0;
-}
-
-/* Overlay layer */
-.layer{
-  position:absolute;
-  inset:0;
-  z-index:1;
-}
-
-/* Editable text */
-.field{
-  position:absolute;
-  font-size:12px;
-  line-height:16px;
-}
-
-input{
-  border:none;
-  background:transparent;
-  font-family:inherit;
-  font-size:12px;
-  width:100%;
-}
-
-/* Items table */
-.items{
-  position:absolute;
-  left:90px;
-  top:360px;
-  width:610px;
-  border-collapse:collapse;
-  font-size:12px;
-}
-
-.items td{
-  padding:6px 4px;
-}
-
-.items .amt{
-  text-align:right;
-}
-
-/* + icon */
-.add{
-  position:absolute;
-  top:340px;
-  left:90px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-/* Totals */
-.total{
-  position:absolute;
-  right:90px;
-  top:510px;
-  text-align:right;
-  font-size:12px;
-}
-
-/* Words */
-.words{
-  position:absolute;
-  left:90px;
-  top:560px;
-  font-size:12px;
-  font-weight:500;
-}
-
-/* Buttons */
-.actions{
-  text-align:center;
-  margin-top:20px;
-}
-
-/* Hide UI in PDF */
-@media print{
-  .actions, .add{ display:none; }
-}
-</style>
+        input { border: none; background: transparent; width: 100%; }
+        input:focus { outline: 1px solid #e2e8f0; background: #f9fafb; }
+        .table-head { background-color: #333; color: white; }
+    </style>
 </head>
-
 <body>
 
-<div class="canvas" id="invoice">
-
-  <!-- Background PDF image -->
-  <img src="template.png" class="bg">
-
-  <!-- Editable overlay -->
-  <div class="layer">
-
-    <!-- Bill To -->
-    <div class="field" style="left:90px; top:150px;">
-      Thefseer Abdul Sathar<br>
-      Dubai U.A.E<br>
-      971567169979<br>
-      thefseernk@gmail.com
+    <div class="no-print flex justify-center gap-4 mb-6">
+        <button onclick="addItem()" class="bg-blue-600 text-white px-4 py-2 rounded">+ Add Item</button>
+        <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded">Download PDF (A4)</button>
     </div>
 
-    <!-- Invoice meta -->
-    <div class="field" style="right:90px; top:150px; text-align:right;">
-      TEF-INV-2026-01-001<br>
-      2026-01-30<br>
-      2026-02-06
+    <div class="invoice-container" id="invoice">
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                [span_0](start_span)<h1 class="text-3xl font-bold tracking-tighter">tef</h1>[span_0](end_span)
+                [span_1](start_span)<p class="mt-4 font-semibold">Thefseer Abdul Sathar</p>[span_1](end_span)
+                [span_2](start_span)<p class="text-sm text-gray-600">Dubai U.A.E</p>[span_2](end_span)
+            </div>
+            <div class="text-right">
+                [span_3](start_span)<h2 class="text-2xl text-gray-400 font-light">INVOICE</h2>[span_3](end_span)
+                [span_4](start_span)<p class="text-sm font-medium">TEF-INV-2026-01-001</p>[span_4](end_span)
+            </div>
+        </div>
+
+        <hr class="mb-6">
+
+        <div class="grid grid-cols-2 gap-8 mb-8 text-sm">
+            <div>
+                <p class="text-gray-500 mb-1">Bill To:</p>
+                [span_5](start_span)<p class="font-bold">Light and Lives</p>[span_5](end_span)
+                [span_6](start_span)<p>Afsal Mohamed</p>[span_6](end_span)
+                [span_7](start_span)<p>971566599500</p>[span_7](end_span)
+                <div class="mt-4">
+                    [span_8](start_span)<p><span class="text-gray-500">Project:</span> Mubadala</p>[span_8](end_span)
+                    [span_9](start_span)<p><span class="text-gray-500">Subject:</span> Reception Light Feature</p>[span_9](end_span)
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <table class="w-2/3">
+                    <tr class="text-right">
+                        <td class="text-gray-500 pb-1">Invoice Date:</td>
+                        [span_10](start_span)<td class="font-medium pb-1">2026-01-30</td>[span_10](end_span)
+                    </tr>
+                    <tr class="text-right">
+                        <td class="text-gray-500 pb-1">Due Date:</td>
+                        [span_11](start_span)<td class="font-medium pb-1">2026-02-06</td>[span_11](end_span)
+                    </tr>
+                    <tr class="text-right">
+                        <td class="text-gray-500">Balance Due:</td>
+                        [span_12](start_span)<td class="font-bold text-lg">AED <span id="balance-due-top">1,500.00</span></td>[span_12](end_span)
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <table class="w-full mb-8">
+            <thead>
+                <tr class="table-head text-left text-xs uppercase tracking-wider">
+                    <th class="p-2 w-10">#</th>
+                    <th class="p-2">Item & Description</th>
+                    <th class="p-2 text-right">Qty</th>
+                    <th class="p-2 text-right">Rate</th>
+                    <th class="p-2 text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="item-list">
+                <tr class="border-b text-sm">
+                    <td class="p-2 align-top">1</td>
+                    <td class="p-2">
+                        <input type="text" value="Charges for Light Feature Visual" class="font-medium">
+                    </td>
+                    <td class="p-2 text-right align-top">
+                        <input type="number" value="3.00" class="text-right qty" oninput="calculate()">
+                    </td>
+                    <td class="p-2 text-right align-top">
+                        <input type="number" value="500.00" class="text-right rate" oninput="calculate()">
+                    </td>
+                    <td class="p-2 text-right align-top font-medium line-total">1,500.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="flex justify-between mt-10">
+            <div class="w-1/2">
+                [span_13](start_span)<p class="text-xs italic text-gray-500 mb-4">** any additional visual will be charged</p>[span_13](end_span)
+                <div class="text-sm">
+                    [span_14](start_span)<p class="font-bold border-b inline-block mb-2">Payment Terms:</p>[span_14](end_span)
+                    [span_15](start_span)<p>50% Advance</p>[span_15](end_span)
+                    [span_16](start_span)<p>50% Delivery</p>[span_16](end_span)
+                </div>
+            </div>
+            <div class="w-1/3 text-sm">
+                <div class="flex justify-between py-1">
+                    <span>Total</span>
+                    [span_17](start_span)<span id="total-amount">1,500.00</span>[span_17](end_span)
+                </div>
+                <div class="flex justify-between py-1">
+                    <span>Paid</span>
+                    [span_18](start_span)<span>0.00</span>[span_18](end_span)
+                </div>
+                <div class="flex justify-between py-2 border-t font-bold text-base">
+                    <span>Balance Due</span>
+                    [span_19](start_span)<span>AED <span id="balance-due-bottom">1,500.00</span></span>[span_19](end_span)
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-xs border-t pt-6 grid grid-cols-2">
+            <div>
+                [span_20](start_span)<p class="font-bold mb-2">Bank Details:</p>[span_20](end_span)
+                [span_21](start_span)<p>Name: Thefseer Nalam Kuttiyil</p>[span_21](end_span)
+                [span_22](start_span)<p>Account No: 0215085399101</p>[span_22](end_span)
+                [span_23](start_span)<p>IBAN: AE410260000215085399101</p>[span_23](end_span)
+                [span_24](start_span)<p>Bank Name: Emirates NBD</p>[span_24](end_span)
+                [span_25](start_span)<p>Account Type: Savings Account</p>[span_25](end_span)
+            </div>
+            <div class="text-right self-end">
+                [span_26](start_span)<p class="font-bold">Thefseer Abdul Sathar</p>[span_26](end_span)
+                [span_27](start_span)<p>971567169979</p>[span_27](end_span)
+                [span_28](start_span)<p>thefseernk@gmail.com</p>[span_28](end_span)
+                [span_29](start_span)<p class="text-blue-600">https://www.behance.net/thefseer/</p>[span_29](end_span)
+            </div>
+        </div>
     </div>
 
-    <!-- Add item -->
-    <div class="add" onclick="addRow()">+</div>
+    <script>
+        function calculate() {
+            let total = 0;
+            const rows = document.querySelectorAll('#item-list tr');
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.qty').value) || 0;
+                const rate = parseFloat(row.querySelector('.rate').value) || 0;
+                const amount = qty * rate;
+                row.querySelector('.line-total').innerText = amount.toLocaleString('en-US', {minimumFractionDigits: 2});
+                total += amount;
+            });
 
-    <!-- Items -->
-    <table class="items" id="items">
-      <tbody>
-        <tr>
-          <td width="60%">
-            <input value="Charges for Light Feature Visual">
-          </td>
-          <td width="10%">
-            <input type="number" value="3" oninput="calc()">
-          </td>
-          <td width="15%">
-            <input type="number" value="500" oninput="calc()">
-          </td>
-          <td width="15%" class="amt amount">1,500.00</td>
-        </tr>
-      </tbody>
-    </table>
+            const formattedTotal = total.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('total-amount').innerText = formattedTotal;
+            document.getElementById('balance-due-top').innerText = formattedTotal;
+            document.getElementById('balance-due-bottom').innerText = formattedTotal;
+        }
 
-    <!-- Totals -->
-    <div class="total">
-      <div>Total: <span id="total">1,500.00</span></div>
-      <div>Paid: <input type="number" value="0" oninput="calc()" style="width:80px;text-align:right"></div>
-      <div><strong>Balance Due:</strong> <span id="balance">1,500.00</span></div>
-    </div>
-
-    <!-- Words -->
-    <div class="words" id="words">
-      One Thousand Five Hundred AED Only
-    </div>
-
-  </div>
-</div>
-
-<div class="actions">
-  <button onclick="generatePDF()">Generate PDF</button>
-</div>
-
-<script>
-function calc(){
-  let total=0;
-  document.querySelectorAll("#items tr").forEach(r=>{
-    let q=+r.children[1].children[0].value||0;
-    let rate=+r.children[2].children[0].value||0;
-    let amt=q*rate;
-    r.querySelector(".amount").innerText=
-      amt.toLocaleString(undefined,{minimumFractionDigits:2});
-    total+=amt;
-  });
-  let paid=document.querySelector(".total input").value||0;
-  let bal=total-paid;
-  document.getElementById("total").innerText=
-    total.toLocaleString(undefined,{minimumFractionDigits:2});
-  document.getElementById("balance").innerText=
-    bal.toLocaleString(undefined,{minimumFractionDigits:2});
-  document.getElementById("words").innerText=
-    numberToWords(bal)+" AED Only";
-}
-
-function addRow(){
-  let tr=document.createElement("tr");
-  tr.innerHTML=`
-    <td><input></td>
-    <td><input type="number" value="1" oninput="calc()"></td>
-    <td><input type="number" value="0" oninput="calc()"></td>
-    <td class="amt amount">0.00</td>`;
-  document.querySelector("#items tbody").appendChild(tr);
-}
-
-function numberToWords(n){
-  const a=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
-  "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
-  const b=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
-  if(n===0)return"Zero";
-  if(n<20)return a[n];
-  if(n<100)return b[Math.floor(n/10)]+" "+a[n%10];
-  if(n<1000)return a[Math.floor(n/100)]+" Hundred "+numberToWords(n%100);
-  if(n<1000000)return numberToWords(Math.floor(n/1000))+" Thousand "+numberToWords(n%1000);
-  return "";
-}
-
-async function generatePDF(){
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF("p","pt","a4");
-  const canvas=await html2canvas(document.getElementById("invoice"),{scale:2});
-  const img=canvas.toDataURL("image/png");
-  pdf.addImage(img,"PNG",0,0,595,842);
-  pdf.save("invoice.pdf");
-}
-
-calc();
-</script>
-
+        function addItem() {
+            const tbody = document.getElementById('item-list');
+            const rowCount = tbody.rows.length + 1;
+            const tr = document.createElement('tr');
+            tr.className = "border-b text-sm";
+            tr.innerHTML = `
+                <td class="p-2 align-top">${rowCount}</td>
+                <td class="p-2"><input type="text" placeholder="Description" class="font-medium"></td>
+                <td class="p-2 text-right align-top"><input type="number" value="0.00" class="text-right qty" oninput="calculate()"></td>
+                <td class="p-2 text-right align-top"><input type="number" value="0.00" class="text-right rate" oninput="calculate()"></td>
+                <td class="p-2 text-right align-top font-medium line-total">0.00</td>
+            `;
+            tbody.appendChild(tr);
+        }
+    </script>
 </body>
 </html>
